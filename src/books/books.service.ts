@@ -5,14 +5,29 @@ import { Book } from './entities/book.entity';
 @Injectable()
 export class BooksService {
   private books: Book[] = [
-    { id: '1', name: 'cunt1', genre: Genre.Satire },
-    { id: '2', name: 'cunt2', genre: Genre.Mystery },
+    {
+      id: '1',
+      title: 'cunt1',
+      description: 'cunty book1',
+      authorName: 'mega cunt1',
+      publicationDate: new Date().toDateString(),
+      price: 2,
+      genre: Genre.Satire,
+    },
+    {
+      id: '2',
+      title: 'cunt2',
+      description: 'cunty book2',
+      authorName: 'mega cunt2',
+      publicationDate: new Date().toDateString(),
+      price: 4,
+      genre: Genre.Satire,
+    },
   ];
   create(createBookDto: CreateBookDto) {
     const newBook: Book = {
+      ...createBookDto,
       id: Math.random().toString(),
-      name: createBookDto.name,
-      genre: createBookDto.genre,
     };
     this.books.push(newBook);
 
