@@ -12,3 +12,44 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+// Define the model for Books
+model Book {
+  id              String   @id @default(uuid())
+  Title           String
+  Description     String
+  Author          Author   @relation(fields: [AuthorID], references: [id])
+  AuthorID        String
+  PublicationDate DateTime
+  Genre           Genre    @relation(fields: [GenreID], references: [id])
+  GenreID         String
+  Price           Float
+
+  @@index([GenreID])
+}
+
+// Define the model for Authors
+model Author {
+  id         String @id @default(uuid())
+  AuthorName String
+
+  Book Book[]
+}
+
+// Define the model for Genres
+model Genre {
+  id        String    @id @default(uuid())
+  GenreName GenreEnum
+
+  Book Book[]
+}
+
+enum GenreEnum {
+  sciencefiction
+  satire
+  drama
+  action
+  romance
+  mystery
+  horror
+}
