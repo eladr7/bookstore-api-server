@@ -16,32 +16,32 @@ datasource db {
 // Define the model for Books
 model Book {
   id              String   @id @default(uuid())
-  Title           String
-  Description     String
-  Author          Author   @relation(fields: [AuthorID], references: [id])
-  AuthorID        String
-  PublicationDate DateTime
-  Genre           Genre    @relation(fields: [GenreID], references: [id])
-  GenreID         String
-  Price           Float
+  title           String
+  description     String
+  author          Author   @relation(fields: [authorID], references: [id])
+  authorID        String
+  publicationDate DateTime
+  genre           Genre    @relation(fields: [genreID], references: [id])
+  genreID         String
+  price           Float
 
-  @@index([GenreID])
+  @@index([genreID])
 }
 
 // Define the model for Authors
 model Author {
   id         String @id @default(uuid())
-  AuthorName String
+  authorName String
 
-  Book Book[]
+  book Book[]
 }
 
 // Define the model for Genres
 model Genre {
   id        String    @id @default(uuid())
-  GenreName GenreEnum
+  genreName GenreEnum
 
-  Book Book[]
+  book Book[]
 }
 
 enum GenreEnum {
