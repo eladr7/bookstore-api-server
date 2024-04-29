@@ -1,15 +1,6 @@
+import { Genre } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import { IsDateString, IsEnum, IsPositive, MinLength } from 'class-validator';
-
-export enum Genre {
-  ScienceFiction = 'sciencefiction',
-  Satire = 'satire',
-  Drama = 'drama',
-  Action = 'action',
-  Romance = 'romance',
-  Mystery = 'mystery',
-  Horror = 'horror',
-}
 
 export class CreateBookDto {
   @MinLength(3)

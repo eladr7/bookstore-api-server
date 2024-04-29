@@ -1,4 +1,4 @@
-import { Genre } from '../dto/create-book.dto';
+import { Genre } from '@prisma/client';
 
 export class Book {
   id: string;

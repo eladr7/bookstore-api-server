@@ -21,11 +21,10 @@ model Book {
   author          Author   @relation(fields: [authorID], references: [id])
   authorID        String
   publicationDate DateTime
-  genre           Genre    @relation(fields: [genreID], references: [id])
-  genreID         String
+  genre           Genre
   price           Float
 
-  @@index([genreID])
+  @@index([genre])
 }
 
 // Define the model for Authors
@@ -36,15 +35,7 @@ model Author {
   book Book[]
 }
 
-// Define the model for Genres
-model Genre {
-  id        String    @id @default(uuid())
-  genreName GenreEnum
-
-  book Book[]
-}
-
-enum GenreEnum {
+enum Genre {
   sciencefiction
   satire
   drama

@@ -9,7 +9,8 @@ import {
   ParseEnumPipe,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
-import { CreateBookDto, Genre } from './dto/create-book.dto';
+import { Genre } from '@prisma/client';
+import { CreateBookDto } from './dto/create-book.dto';
 
 @Controller('books')
 export class BooksController {
@@ -26,12 +27,18 @@ export class BooksController {
   }
 
   @Get(':genre/:id')
-  findOne(@Param('genre') genre: string, @Param('id') id: string) {
+  findOne(
+    @Param('genre', new ParseEnumPipe(Genre)) genre: Genre,
+    @Param('id') id: string,
+  ) {
     return this.booksService.findOne(genre, id);
   }
 
   @Delete(':genre/:id')
-  remove(@Param('genre') genre: string, @Param('id') id: string) {
+  remove(
+    @Param('genre', new ParseEnumPipe(Genre)) genre: Genre,
+    @Param('id') id: string,
+  ) {
     return this.booksService.remove(genre, id);
   }
 }
