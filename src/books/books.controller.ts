@@ -7,6 +7,7 @@ import {
   Delete,
   ValidationPipe,
   ParseEnumPipe,
+  NotFoundException,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { Genre } from '@prisma/client';
@@ -18,7 +19,11 @@ export class BooksController {
 
   @Post(':genre')
   create(@Body(new ValidationPipe()) createBookDto: CreateBookDto) {
-    return this.booksService.create(createBookDto);
+    try {
+      return this.booksService.create(createBookDto);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 
   @Get(':genre')
