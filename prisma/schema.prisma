@@ -24,6 +24,7 @@ model Book {
   genre           Genre
   price           Float
 
+  @@unique([title, authorID])
   @@index([genre])
 }
 
@@ -33,10 +34,12 @@ model Author {
   authorName String
 
   book Book[]
+
+  @@unique([authorName])
 }
 
 enum Genre {
-  sciencefiction
+  scienceFiction
   satire
   drama
   action

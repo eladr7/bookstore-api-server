@@ -8,6 +8,7 @@ import {
   ValidationPipe,
   ParseEnumPipe,
   NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { Genre } from '@prisma/client';
@@ -18,32 +19,64 @@ export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
   @Post(':genre')
-  create(@Body(new ValidationPipe()) createBookDto: CreateBookDto) {
+  async create(@Body(new ValidationPipe()) createBookDto: CreateBookDto) {
     try {
-      return this.booksService.create(createBookDto);
+      return await this.booksService.create(createBookDto);
     } catch (error) {
-      throw new NotFoundException(error.message);
+      throw new InternalServerErrorException(
+        'Book creation failed: ' + error.message,
+      );
     }
   }
 
   @Get(':genre')
-  findAll(@Param('genre', new ParseEnumPipe(Genre)) genre: Genre) {
-    return this.booksService.findAll(genre);
+  async findAll(@Param('genre', new ParseEnumPipe(Genre)) genre: Genre) {
+    try {
+      const books = await this.booksService.findAll(genre);
+      if (books.length === 0) {
+        throw new NotFoundException('No books found');
+      }
+      return books;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to fetch books: ' + error.message,
+      );
+    }
   }
 
   @Get(':genre/:id')
-  findOne(
+  async findOne(
     @Param('genre', new ParseEnumPipe(Genre)) genre: Genre,
     @Param('id') id: string,
   ) {
-    return this.booksService.findOne(genre, id);
+    try {
+      const book = await this.booksService.findOne(genre, id);
+      if (!book) {
+        throw new NotFoundException('Book not found');
+      }
+      return book;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to fetch book: ' + error.message,
+      );
+    }
   }
 
   @Delete(':genre/:id')
-  remove(
+  async remove(
     @Param('genre', new ParseEnumPipe(Genre)) genre: Genre,
     @Param('id') id: string,
   ) {
-    return this.booksService.remove(genre, id);
+    try {
+      const deletedBook = await this.booksService.remove(genre, id);
+      if (!deletedBook) {
+        throw new NotFoundException('Book not found');
+      }
+      return deletedBook;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to remove book: ' + error.message,
+      );
+    }
   }
 }

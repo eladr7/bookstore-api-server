@@ -12,70 +12,83 @@ export class BooksService {
       createBookDto;
     const price = parseFloat(String(createBookDto.price));
 
-    const newBook = await this.prisma.book.create({
-      data: {
-        title,
-        description,
-        author: {
-          create: {
-            authorName,
+    try {
+      const newBook = await this.prisma.book.create({
+        data: {
+          title,
+          description,
+          author: {
+            connectOrCreate: {
+              where: { authorName }, // Specify the condition for connect or create
+              create: { authorName }, // Specify the fields to create if author doesn't exist
+            },
           },
+          publicationDate,
+          price,
+          genre,
         },
-        publicationDate,
-        price,
-        genre,
-      },
-      include: {
-        author: true,
-      },
-    });
+        include: {
+          author: true,
+        },
+      });
 
-    if (!newBook) {
-      throw new Error('Book creation failed!');
+      return this.mapToBook(newBook);
+    } catch (error) {
+      throw new Error('Book creation failed: ' + error.message);
     }
-
-    return this.mapToBook(newBook);
   }
 
   async findAll(genre: Genre): Promise<Book[]> {
-    const books = await this.prisma.book.findMany({
-      where: {
-        genre,
-      },
-      include: {
-        author: true,
-      },
-    });
+    try {
+      const books = await this.prisma.book.findMany({
+        where: {
+          genre,
+        },
+        include: {
+          author: true,
+        },
+      });
 
-    return books.map(this.mapToBook); // Map all books to Book class
+      return books.map(this.mapToBook);
+    } catch (error) {
+      throw new Error('Books not found');
+    }
   }
 
   async findOne(genre: Genre, id: string): Promise<Book | null> {
-    const book = await this.prisma.book.findUnique({
-      where: {
-        id,
-        genre,
-      },
-      include: {
-        author: true,
-      },
-    });
+    try {
+      const book = await this.prisma.book.findUnique({
+        where: {
+          id,
+          genre,
+        },
+        include: {
+          author: true,
+        },
+      });
 
-    return book ? this.mapToBook(book) : null; // Map the found book to Book class if not null
+      return book ? this.mapToBook(book) : null;
+    } catch (error) {
+      throw new Error('Book not found');
+    }
   }
 
   async remove(genre: Genre, id: string): Promise<Book | null> {
-    const deletedBook = await this.prisma.book.delete({
-      where: {
-        id,
-        genre,
-      },
-      include: {
-        author: true,
-      },
-    });
+    try {
+      const deletedBook = await this.prisma.book.delete({
+        where: {
+          id,
+          genre,
+        },
+        include: {
+          author: true,
+        },
+      });
 
-    return deletedBook ? this.mapToBook(deletedBook) : null; // Map the deleted book to Book class if not null
+      return deletedBook ? this.mapToBook(deletedBook) : null;
+    } catch (error) {
+      throw new Error('Failed to delete');
+    }
   }
 
   private mapToBook(prismaBook: any): Book {
