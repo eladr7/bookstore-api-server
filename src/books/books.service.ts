@@ -8,9 +8,9 @@ export class BooksService {
   prisma = new PrismaClient();
 
   async create(createBookDto: CreateBookDto) {
-    const { title, description, authorName, publicationDate, genre } =
-      createBookDto;
+    const { title, description, authorName, genre } = createBookDto;
     const price = parseFloat(String(createBookDto.price));
+    const publicationDate = createBookDto.publicationDate + 'T00:00:00.000Z'; // Append time component
 
     try {
       const newBook = await this.prisma.book.create({
