@@ -30,12 +30,27 @@ export class BooksController {
   }
 
   @Get(':genre')
-  async findAll(@Param('genre', new ParseEnumPipe(Genre)) genre: Genre) {
+  async findAllByGenre(@Param('genre', new ParseEnumPipe(Genre)) genre: Genre) {
     try {
-      const books = await this.booksService.findAll(genre);
-      if (books.length === 0) {
-        throw new NotFoundException('No books found');
-      }
+      const books = await this.booksService.findAllByGenre(genre);
+      // if (books.length === 0) {
+      //   throw new NotFoundException('No books found');
+      // }
+      return books;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to fetch books: ' + error.message,
+      );
+    }
+  }
+
+  @Get()
+  async findAll() {
+    try {
+      const books = await this.booksService.findAll();
+      // if (books.length === 0) {
+      //   throw new NotFoundException('No books found');
+      // }
       return books;
     } catch (error) {
       throw new InternalServerErrorException(
@@ -51,9 +66,9 @@ export class BooksController {
   ) {
     try {
       const book = await this.booksService.findOne(genre, id);
-      if (!book) {
-        throw new NotFoundException('Book not found');
-      }
+      // if (!book) {
+      //   throw new NotFoundException('Book not found');
+      // }
       return book;
     } catch (error) {
       throw new InternalServerErrorException(

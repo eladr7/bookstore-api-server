@@ -38,12 +38,26 @@ export class BooksService {
     }
   }
 
-  async findAll(genre: Genre): Promise<Book[]> {
+  async findAllByGenre(genre: Genre): Promise<Book[]> {
     try {
       const books = await this.prisma.book.findMany({
         where: {
           genre,
         },
+        include: {
+          author: true,
+        },
+      });
+
+      return books.map(this.mapToBook);
+    } catch (error) {
+      throw new Error('Books not found');
+    }
+  }
+
+  async findAll(): Promise<Book[]> {
+    try {
+      const books = await this.prisma.book.findMany({
         include: {
           author: true,
         },
