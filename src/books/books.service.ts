@@ -34,7 +34,7 @@ export class BooksService {
 
       return this.mapToBook(newBook);
     } catch (error) {
-      throw new Error('Book creation failed: ' + error.message);
+      throw error;
     }
   }
 

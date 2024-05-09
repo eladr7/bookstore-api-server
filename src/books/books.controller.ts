@@ -11,7 +11,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
-import { Genre } from '@prisma/client';
+import { Genre, Prisma } from '@prisma/client';
 import { CreateBookDto } from './dto/create-book.dto';
 
 @Controller('books')
@@ -23,6 +23,14 @@ export class BooksController {
     try {
       return await this.booksService.create(createBookDto);
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new InternalServerErrorException(
+            'Book creation failed: This author already has a book with this title',
+          );
+        }
+      }
+
       throw new InternalServerErrorException(
         'Book creation failed: ' + error.message,
       );
@@ -33,9 +41,6 @@ export class BooksController {
   async findAllByGenre(@Param('genre', new ParseEnumPipe(Genre)) genre: Genre) {
     try {
       const books = await this.booksService.findAllByGenre(genre);
-      // if (books.length === 0) {
-      //   throw new NotFoundException('No books found');
-      // }
       return books;
     } catch (error) {
       throw new InternalServerErrorException(
@@ -48,9 +53,6 @@ export class BooksController {
   async findAll() {
     try {
       const books = await this.booksService.findAll();
-      // if (books.length === 0) {
-      //   throw new NotFoundException('No books found');
-      // }
       return books;
     } catch (error) {
       throw new InternalServerErrorException(
@@ -66,9 +68,6 @@ export class BooksController {
   ) {
     try {
       const book = await this.booksService.findOne(genre, id);
-      // if (!book) {
-      //   throw new NotFoundException('Book not found');
-      // }
       return book;
     } catch (error) {
       throw new InternalServerErrorException(
